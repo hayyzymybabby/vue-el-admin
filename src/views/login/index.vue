@@ -5,7 +5,7 @@
         <div class="col-12 col-sm-9 col-md-7 col-lg-5 m-auto pt-5">
           <div class="card mt-5">
             <div class="card-header">
-              <h3 class="text-center mb-0">VUE-ADMIN</h3>
+              <h3 class="text-center mb-0">{{$conf.logo}}</h3>
             </div>
             <div class="card-body">
               <el-form ref="form" :rules="rules" :model="form" size="medium">

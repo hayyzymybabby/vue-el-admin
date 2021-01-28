@@ -14,15 +14,24 @@ const routes = [
     component: 'layout',
     children: [
       {
-        component: 'index/index'
+        component: 'index/index',
+        meta: {
+          title: '后台首页'
+        }
       },
       {
-        component: 'shop/goods/list'
+        component: 'shop/goods/list',
+        meta: {
+          title: '商品列表'
+        }
       }
     ]
   },
   {
-    component: 'login/index'
+    component: 'login/index',
+    meta: {
+      title: '登录页'
+    }
   },
   {
     path: '*',

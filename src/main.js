@@ -5,6 +5,9 @@ import store from './store'
 import './plugins/element.js'
 // 引入bootstrap
 import './assets/css/bootstrap.min.css'
+// 引入全局配置文件
+import $conf from './common/config/config.js'
+Vue.prototype.$conf = $conf
 
 Vue.config.productionTip = false
 
