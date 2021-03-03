@@ -20,6 +20,12 @@ const routes = [
         }
       },
       {
+        component: 'image/index',
+        meta: {
+          title: '相册管理'
+        }
+      },
+      {
         component: 'shop/goods/list',
         meta: {
           title: '商品列表'

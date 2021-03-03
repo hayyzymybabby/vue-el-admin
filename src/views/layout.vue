@@ -24,7 +24,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main class="bg-light" style="padding-bottom: 60px;">
+      <el-main class="bg-light" style="padding-bottom: 60px;position: relative;">
         <!-- 面包屑导航 -->
         <div class="border-bottom mb-3 bg-white" style="padding: 20px;margin: -20px;" v-if="bran.length > 0">
           <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -101,6 +101,12 @@
         }
       },
       handleSelect (key, keyPath) {
+        if (key === '100-1') {
+          return console.log('修改资料')
+        }
+        if (key === '100-2') {
+          return console.log('退出')
+        }
         this.navBar.active = key
         if (this.slideMenus.length > 0) {
           this.$router.push({
