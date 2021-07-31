@@ -13,15 +13,14 @@ const routes = [
     redirect: { name: 'index' },
     children: [
       {
-        path: '/index',
-        name: 'index',
         component: 'index/index'
+      },
+      {
+        component: 'shop/goods/list'
       }
     ]
   },
   {
-    path: '/login',
-    name: 'login',
     component: 'login/index'
   },
   {
@@ -39,12 +38,28 @@ function getRoutes (routes) {
 function createRoute (arr) {
   for (let i = 0; i < arr.length; i++) {
     if (!arr[i].component) return
+    // 去除index
+    const val = removeIndex(arr[i].component)
+    // 生成name
+    arr[i].name = arr[i].name || val.replace(/\//g, '_')
+    // 生成path
+    arr[i].path = arr[i].path || `/${val}`
     const componentFun = import(`@/views/${arr[i].component}.vue`)
     arr[i].component = () => componentFun
     if (arr[i].children && arr[i].children.length > 0) {
       createRoute(arr[i].children)
     }
   }
+}
+
+// 去除index结尾
+function removeIndex (str) {
+  const index = str.lastIndexOf('/')
+  const value = str.substring(index + 1)
+  if (value === 'index') {
+    return str.substring(0, index)
+  }
+  return str
 }
 
 export default getRoutes(routes)
