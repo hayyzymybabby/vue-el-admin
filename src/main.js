@@ -2,14 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import './plugins/elements'
 import * as filters from './common/utils/filters'
 // 引入全局配置文件
 import $conf from './common/config/config'
 Vue.prototype.$conf = $conf
 
-Vue.use(ElementUI)
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })

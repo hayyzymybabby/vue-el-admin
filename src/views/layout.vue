@@ -2,7 +2,7 @@
   <div>
     <el-container class="layout">
       <el-header class="layout-header d-flex align-items-center">
-        <a class="h5 text-light mb-0 mr-auto">{{$conf.logo}}</a>
+        <a class="h5 text-light mb-0 mr-auto">{{ $conf.logo }}</a>
         <el-menu
           :default-active="navBar.active"
           mode="horizontal"
@@ -11,7 +11,12 @@
           text-color="#fff"
           active-text-color="#ffd04b"
         >
-          <el-menu-item :index="index | valToString" v-for="(nav,index) in navBar.list" :key="index">{{nav.name}}</el-menu-item>
+          <el-menu-item
+            :index="index | valToString"
+            v-for="(nav, index) in navBar.list"
+            :key="index"
+            >{{ nav.name }}</el-menu-item
+          >
           <el-submenu index="100">
             <template slot="title">
               <el-avatar
@@ -26,22 +31,46 @@
         </el-menu>
       </el-header>
       <el-container class="layout-container">
-        <el-aside width="200px">
-          <el-menu :default-active="sideMenuActive" @select="sideSelect">
-            <el-menu-item :index="index | valToString" v-for="(menu, index) in sideMenu" :key="index">
+        <el-aside class="layout-container-aside">
+          <el-menu
+            :default-active="sideMenuActive"
+            @select="sideSelect"
+            class="layout-container-aside-menu"
+          >
+            <el-menu-item
+              :index="index | valToString"
+              v-for="(menu, index) in sideMenu"
+              :key="index"
+            >
               <i :class="menu.icon"></i>
-              <span slot="title">{{menu.name}}</span>
+              <span slot="title">{{ menu.name }}</span>
             </el-menu-item>
           </el-menu>
         </el-aside>
-        <el-main>
-          <ul>
-            <li v-for="i in 100" :key="i">{{ i }}</li>
-          </ul>
+        <el-main class="layout-container-main bg-light">
+          <!-- 面包屑导航 -->
+          <div
+            class="border-bottom layout-container-main-breadcrumb mb-3 bg-white"
+            v-if="breadcrumb.length"
+          >
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item
+                v-for="(item, index) in breadcrumb"
+                :key="index"
+                :to="{ path: item.path }"
+                >{{ item.title }}</el-breadcrumb-item
+              >
+            </el-breadcrumb>
+          </div>
+          <!-- 主内容 -->
+          <router-view></router-view>
+          <!-- 回到顶部 -->
+          <el-backtop target=".el-main" :bottom="100">
+            <div class="layout-container-main-backtop">UP</div>
+          </el-backtop>
         </el-main>
       </el-container>
     </el-container>
-    <!-- <router-view></router-view> -->
   </div>
 </template>
 
@@ -49,10 +78,26 @@
 export default {
   created () {
     this.navBar = this.$conf.navBar
+    this.getBreadcrumb()
+    this.__initNavBar()
   },
   data () {
     return {
-      navBar: []
+      navBar: [],
+      breadcrumb: []
+    }
+  },
+  watch: {
+    $route (to, from) {
+      // 本地缓存已选择的导航，防止刷新丢失
+      localStorage.setItem(
+        'navActive',
+        JSON.stringify({
+          top: this.navBar.active,
+          left: this.sideMenuActive
+        })
+      )
+      this.getBreadcrumb()
     }
   },
   computed: {
@@ -71,9 +116,46 @@ export default {
   methods: {
     handleSelect (key, keyPath) {
       this.navBar.active = key
+      this.$router.push({
+        name: this.sideMenu[this.sideMenuActive].pathname
+      })
     },
     sideSelect (key, keyPath) {
       this.sideMenuActive = key
+      this.$router.push({
+        name: this.sideMenu[key].pathname
+      })
+    },
+    // 获取面包屑导航
+    getBreadcrumb () {
+      const currentRoutes = this.$route.matched.filter((item) => item.name)
+      const breadcrumb = []
+      // 过滤layout和index
+      currentRoutes.forEach((item, index) => {
+        if (item.name === 'layout' || item.name === 'index') return
+        breadcrumb.push({
+          name: item.name,
+          path: item.path,
+          title: item.meta.title
+        })
+      })
+      if (breadcrumb.length) {
+        breadcrumb.unshift({
+          name: 'index',
+          path: '/',
+          title: '首页'
+        })
+      }
+      this.breadcrumb = breadcrumb
+    },
+    // 初始化选中菜单
+    __initNavBar () {
+      const navBarString = localStorage.getItem('navActive')
+      if (navBarString) {
+        const navBar = JSON.parse(navBarString)
+        this.navBar.active = navBar.top
+        this.sideMenuActive = navBar.left
+      }
     }
   }
 }
@@ -92,7 +174,25 @@ export default {
   }
   .layout-container {
     height: 100%;
-    padding-bottom: 60px;
+    .layout-container-aside {
+      width: 200px;
+      .layout-container-aside-menu {
+        height: 100%;
+      }
+    }
+    .layout-container-main-breadcrumb {
+      padding: 20px;
+      margin: -20px;
+    }
+    .layout-container-main-backtop {
+      height: 100%;
+      width: 100%;
+      background-color: #f2f5f6;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+      text-align: center;
+      line-height: 40px;
+      color: #1989fa;
+    }
   }
 }
 </style>

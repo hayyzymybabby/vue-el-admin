@@ -13,14 +13,17 @@ const routes = [
     redirect: { name: 'index' },
     children: [
       {
+        meta: { title: '首页' },
         component: 'index/index'
       },
       {
+        meta: { title: '商品列表' },
         component: 'shop/goods/list'
       }
     ]
   },
   {
+    meta: { title: '登录' },
     component: 'login/index'
   },
   {
