@@ -182,6 +182,7 @@ export default {
     }
     .layout-container-main {
       padding-bottom: 60px;
+      position: relative;
       .layout-container-main-breadcrumb {
         padding: 20px;
         margin: -20px;
