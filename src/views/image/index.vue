@@ -21,7 +21,7 @@
         <el-button type="success" size="mini">搜索</el-button>
       </div>
       <div class="ml-auto">
-        <el-button type="success" size="mini">创建相册</el-button>
+        <el-button type="success" size="mini" @click="openAlbumModel(null)">创建相册</el-button>
         <el-button type="warning" size="mini">上传图片</el-button>
       </div>
     </el-header>
@@ -46,8 +46,12 @@
                 {{ item.num }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>修改</el-dropdown-item>
-                <el-dropdown-item>删除</el-dropdown-item>
+                <el-dropdown-item @click.stop.native="openAlbumModel({item, index})"
+                  >修改</el-dropdown-item
+                >
+                <el-dropdown-item @click.stop.native="albumDel(index)"
+                  >删除</el-dropdown-item
+                >
               </el-dropdown-menu>
             </el-dropdown>
           </li>
@@ -60,6 +64,26 @@
     </el-container>
     <!-- 底部 -->
     <el-footer class="image-footer">Footer</el-footer>
+
+    <!-- 修改 | 创建相册 -->
+    <el-dialog title="修改相册" :visible.sync="albumModel">
+      <el-form :model="albumForm" label-width="80px">
+        <el-form-item label="相册名称">
+          <el-input v-model="albumForm.name" size="medium"></el-input>
+        </el-form-item>
+        <el-form-item label="相册排序">
+          <el-input-number
+            v-model="albumForm.order"
+            :min="0"
+            size="medium"
+          ></el-input-number>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="albumModel = false">取 消</el-button>
+        <el-button type="primary" @click="confirmAlbumModel">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -72,7 +96,13 @@ export default {
         keyword: ''
       },
       albumIndex: 0,
-      albums: []
+      albums: [],
+      albumModel: false,
+      albumEditIndex: -1,
+      albumForm: {
+        name: '',
+        order: 0
+      }
     }
   },
   created () {
@@ -90,6 +120,53 @@ export default {
     },
     albumChange (index) {
       this.albumIndex = index
+    },
+    albumDel (index) {
+      this.$confirm('是否删除该相册', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.albums.splice(index, 1)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      })
+    },
+    openAlbumModel (obj) {
+      console.log(obj)
+      if (obj) {
+        const { item, index } = obj
+        this.albumForm.name = item.name
+        this.albumForm.order = item.order
+        this.albumEditIndex = index
+        this.albumModel = true
+      } else {
+        this.albumForm = {
+          name: '',
+          order: 0
+        }
+        this.albumEditIndex = -1
+        this.albumModel = true
+      }
+    },
+    confirmAlbumModel () {
+      if (this.albumEditIndex > -1) {
+        this.albumEdit()
+        this.albumModel = false
+      } else {
+        this.albums.unshift({
+          name: this.albumForm.name,
+          order: this.albumForm.order,
+          num: 0
+        })
+        this.albumModel = false
+      }
+    },
+    albumEdit () {
+      this.albums[this.albumEditIndex].name = this.albumForm.name
+      this.albums[this.albumEditIndex].order = this.albumForm.order
     }
   }
 }
